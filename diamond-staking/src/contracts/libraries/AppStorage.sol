@@ -1,56 +1,38 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {LibDiamond} from "./LibDiamond.sol";
+library AppStorage {
+    bytes32 constant STORAGE_SLOT = keccak256("diamond.staking.storage");
 
-struct StakingInfo {
-    uint256 amount;
-    uint256 lastUpdateTime;
-    uint256 rewardDebt;
-}
+    struct Layout {
+        // Token addresses
+        address rewardToken;
+        
+        // Staking parameters
+        uint256 rewardRate;      // Base reward rate (in basis points)
+        uint256 decayRate;       // Rate at which rewards decay (in basis points)
+        uint256 minStakeDuration;
+        uint256 maxStakeDuration;
+        
+        // Staking data
+        mapping(address => mapping(address => uint256)) stakedAmount;
+        mapping(address => mapping(address => uint256)) stakingTimestamp;
+        mapping(address => mapping(address => uint256)) lastRewardClaim;
+        mapping(address => mapping(uint256 => uint256)) stakedNFTs;
+        mapping(address => mapping(uint256 => uint256)) stakedERC1155;
+        
+        // Total staked amounts
+        mapping(address => uint256) totalStaked;
+        
+        // Facet addresses
+        mapping(bytes4 => address) selectorToFacetAndPosition;
+        mapping(address => bool) supportedTokens;
+    }
 
-struct NFTStakingInfo {
-    uint256[] stakedTokenIds;
-    uint256 lastUpdateTime;
-    uint256 rewardDebt;
-}
-
-struct ERC1155StakingInfo {
-    mapping(uint256 => uint256) stakedAmounts;
-    uint256 lastUpdateTime;
-    uint256 rewardDebt;
-}
-
-struct AppStorage {
-    // Token addresses
-    address diamondToken;
-    
-    // Staking mappings
-    mapping(address => mapping(address => StakingInfo)) erc20Stakes;
-    mapping(address => mapping(address => NFTStakingInfo)) erc721Stakes;
-    mapping(address => mapping(address => ERC1155StakingInfo)) erc1155Stakes;
-    
-    // Reward parameters
-    uint256 rewardRate; // Rewards per second per token
-    uint256 decayRate; // Rate at which rewards decrease over time
-    uint256 lastUpdateTime;
-    
-    // Total staked amounts
-    mapping(address => uint256) totalStakedERC20;
-    mapping(address => uint256) totalStakedERC721;
-    mapping(address => uint256) totalStakedERC1155;
-    
-    // Pausable
-    bool paused;
-    
-    // Access control
-    mapping(address => bool) isAdmin;
-}
-
-library LibAppStorage {
-    function diamondStorage() internal pure returns (AppStorage storage ds) {
+    function layout() internal pure returns (Layout storage l) {
+        bytes32 position = STORAGE_SLOT;
         assembly {
-            ds.slot := 0
+            l.slot := position
         }
     }
 } 

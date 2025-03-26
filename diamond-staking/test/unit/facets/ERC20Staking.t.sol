@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "forge-std/Test.sol";
-import "../../src/contracts/diamond/Diamond.sol";
+import "../diamond/DiamondTest.t.sol";
 import "../../src/contracts/facets/ERC20StakingFacet.sol";
 import "../../src/contracts/facets/ERC20Facet.sol";
 
