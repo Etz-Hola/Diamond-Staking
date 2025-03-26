@@ -5,11 +5,15 @@ libs = ["lib"]
 solc = "0.8.19"
 optimizer = true
 optimizer_runs = 200
+remappings = [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "forge-std/=lib/forge-std/src/"
+]
 
-[rpc_endpoints]
+[profile.rpc_endpoints]
 local = "http://localhost:8545"
 
-[etherscan_api]
+[profile.etherscan]
 local = "http://localhost:3000/api"
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
